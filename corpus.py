@@ -48,18 +48,21 @@ def tokenize(text):
     '''
     とりあえず形態素解析して名詞だけ取り出す感じにしてる
     '''
+
     node = mecab.parseToNode(text)
     while node:
         if node.feature.split(',')[0] == '名詞':
-            yield node.surface.lower()
+            try:
+                yield node.surface.lower()
+            except:
+                yield '0'
         node = node.next
-
 
 def check_stopwords(word):
     '''
     ストップワードだったらTrueを返す
     '''
-    if re.search(r'^[0-9]+$', word):  # 数字だけ
+    if re.search('^[0-9]+$', word):  # 数字だけ
         return True
     return False
 
