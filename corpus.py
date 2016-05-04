@@ -5,48 +5,16 @@ import re
 from gensim import corpora, matutils
 import MeCab
 import zenhan
+import pandas as pd
 
-DATA_DIR_PATH = './text/stretch_data.txt'
-DICTIONARY_FILE_NAME = 'livedoordic.txt'
+DATA_PATH = './text/data/stretch_data.txt'
+DICTIONARY_FILE_NAME = './dict/stretch_dic.txt'
 mecab = MeCab.Tagger('mecabrc')
 
 """
 TODO: Receive pandas Series and generate dict
       Now this script reads files.
 """
-
-def get_class_id(file_name):
-    '''
-    ファイル名から、クラスIDを決定する。
-    学習データを作るときに使っています。
-    '''
-    dir_list = get_dir_list()
-    dir_name = next(filter(lambda x: x in file_name, dir_list), None)
-    if dir_name:
-        return dir_list.index(dir_name)
-    return None
-
-
-def get_dir_list():
-    '''
-    ライブドアコーパスが./text/ の下にカテゴリ別にあるからそのカテゴリ一覧をとってるだけ
-    '''
-    tmp = os.listdir(DATA_DIR_PATH)
-    if tmp is None:
-        return None
-    return sorted([x for x in tmp if os.path.isdir(DATA_DIR_PATH + x)])
-
-
-def get_file_content(file_path):
-    '''
-    1つの記事を読み込み
-    '''
-    ret = ''
-    with open(file_path) as f:
-        tmp = [line for line in f.readlines()][2:]  # ライブドアコーパスが3行目から本文はじまってるから
-        ret = ''.join(tmp)
-
-    return ret
 
 
 def tokenize(text):
@@ -103,29 +71,18 @@ def filter_dictionary(dictionary):
 
 def get_contents():
     '''
-    livedoorニュースのすべての記事をdictでまとめておく
+    Extract stretch data
     '''
-    dir_list = get_dir_list()
 
-    if dir_list is None:
-        return None
-
-    ret = {}
-    for dir_name in dir_list:
-        file_list = os.listdir(DATA_DIR_PATH + dir_name)
-
-        if file_list is None:
-            continue
-        for file_name in file_list:
-            if dir_name in file_name:  # LICENSE.txt とかを除くためです。。
-                ret[file_name] = get_file_content(DATA_DIR_PATH + dir_name + '/' + file_name)
-
-    return ret
+    df = pd.read_csv(DATA_PATH)
+    return (df['KIBO_TANTOGYOMU_MEMO'] + df['KIBO_HOSPITALTYPE_MEMO'] + df['CONSCOMMENT'] + df['SHIGOTONAIYO']).to_dict()
 
 
 def get_vector(dictionary, content):
     '''
-    ある記事の特徴語カウント
+    Analyze content and return a vector of feature using dictionary.
+    @param  gensim_dict, str
+    @return vector
     '''
     tmp = dictionary.doc2bow(get_words_main(content))
     dense = list(matutils.corpus2dense([tmp], num_terms=len(dictionary)).T[0])
