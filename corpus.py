@@ -4,6 +4,7 @@ import sys
 import re
 from gensim import corpora, matutils
 import MeCab
+import zenhan
 
 DATA_DIR_PATH = './text/'
 DICTIONARY_FILE_NAME = 'livedoordic.txt'
@@ -47,13 +48,14 @@ def get_file_content(file_path):
 def tokenize(text):
     '''
     とりあえず形態素解析して名詞だけ取り出す感じにしてる
+    Extract alphabet as lower, hankaku
     '''
 
     node = mecab.parseToNode(text)
     while node:
         if node.feature.split(',')[0] == '名詞':
             try:
-                yield node.surface.lower()
+                yield zenhan.z2h(node.surface.lower().strip())
             except:
                 yield '0'
         node = node.next
@@ -64,7 +66,12 @@ def check_stopwords(word):
     '''
     if re.search('^[0-9]+$', word):  # 数字だけ
         return True
+    if re.search('^[\xFF00-\xFF40|\xFF5B-\xFFEF|︰-＠]+$', word):  # Full width symbol Only
+        return True
+    if re.search('^[\xA2-\xF7]+$', word):  # Half width symbol Only
+        return True
     return False
+
 
 
 def get_words(contents):
@@ -148,3 +155,4 @@ def get_dictionary(create_flg=False, file_name=DICTIONARY_FILE_NAME):
 
 if __name__ == '__main__':
     get_dictionary(create_flg=True)
+
