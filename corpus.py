@@ -48,7 +48,7 @@ def get_file_content(file_path):
 def tokenize(text):
     '''
     とりあえず形態素解析して名詞だけ取り出す感じにしてる
-    Extract alphabet as lower, hankaku
+    Extract alphabet as lower, hankaku, space-trimed
     '''
 
     node = mecab.parseToNode(text)
@@ -60,18 +60,16 @@ def tokenize(text):
                 yield '0'
         node = node.next
 
+
 def check_stopwords(word):
     '''
     ストップワードだったらTrueを返す
     '''
     if re.search('^[0-9]+$', word):  # 数字だけ
         return True
-    if re.search('^[\xFF00-\xFF40|\xFF5B-\xFFEF|︰-＠]+$', word):  # Full width symbol Only
-        return True
-    if re.search('^[\xA2-\xF7]+$', word):  # Half width symbol Only
-        return True
-    return False
-
+    if re.search('^[0-9a-zA-Z\u3041-\u3093\u30A1-\u30F6\u4E00-\u9FD0]+$', word):  # White list [Alphabet, Kana, Kanji]
+        return False
+    return True
 
 
 def get_words(contents):

@@ -2,14 +2,11 @@
 from scipy.spatial.distance import cosine
 import corpus
 
-# 辞書の読み込み
-dictionary = corpus.get_dictionary(create_flg=False)
-
 def get_similarity(article1, article2):
     """Receive 2 articles (as str) then return their similarity"""
 
-    # 記事の読み込み
-    contents = corpus.get_contents()
+    # 辞書の読み込み
+    dictionary = corpus.get_dictionary(create_flg=False)
 
     # 特徴抽出
     feature1 = corpus.get_vector(dictionary, article1)
