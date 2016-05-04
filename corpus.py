@@ -6,10 +6,14 @@ from gensim import corpora, matutils
 import MeCab
 import zenhan
 
-DATA_DIR_PATH = './text/'
+DATA_DIR_PATH = './text/stretch_data.txt'
 DICTIONARY_FILE_NAME = 'livedoordic.txt'
 mecab = MeCab.Tagger('mecabrc')
 
+"""
+TODO: Receive pandas Series and generate dict
+      Now this script reads files.
+"""
 
 def get_class_id(file_name):
     '''
