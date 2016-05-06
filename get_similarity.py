@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 from scipy.spatial.distance import cosine
+import pandas as pd
 import corpus
 
 def get_similarity(article1, article2):
@@ -15,9 +15,13 @@ def get_similarity(article1, article2):
     return cosine(feature1, feature2)
 
 def main():
-    article1 = corpus.get_file_content('text/dokujo-tsushin/dokujo-tsushin-4880091.txt')
-    article2 = corpus.get_file_content('text/dokujo-tsushin/dokujo-tsushin-4880092.txt')
-    print(get_similarity(article1, article2))
+    df = pd.read_csv(corpus.DATA_PATH)
+
+    for i in range(len(df)):
+        memo1 = df['KIBO_TANTOGYOMU_MEMO'][i] + df['KIBO_HOSPITALTYPE_MEMO'][i]
+        memo2 = df['CONSCOMMENT'][i] + df['SHIGOTONAIYO'][i]
+        print('Similarity========\n{2}\nCareer========\n{0}\nOrder=========\n{1}\n\n'.format(memo1, memo2, get_similarity(memo1, memo2)))
 
 if __name__ == '__main__':
     main()
+
