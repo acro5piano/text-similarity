@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os
 import sys
 import re
@@ -7,7 +6,7 @@ import MeCab
 import zenhan
 import pandas as pd
 
-DATA_PATH = './text/data/stretch_data.txt'
+DATA_PATH = './text/stretch_data.txt'
 DICTIONARY_FILE_NAME = './dict/stretch_dic.txt'
 mecab = MeCab.Tagger('mecabrc')
 
@@ -65,7 +64,7 @@ def filter_dictionary(dictionary):
     '''
     低頻度と高頻度のワードを除く感じで
     '''
-    dictionary.filter_extremes(no_below=20, no_above=0.3)  # この数字はあとで変えるかも
+    dictionary.filter_extremes(no_below=20, no_above=0.5)  # この数字はあとで変えるかも
     return dictionary
 
 
